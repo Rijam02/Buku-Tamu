@@ -1,6 +1,12 @@
 <?php
 require_once('function.php');
 include_once('templates/header.php');
+
+if(($_SESSION['role']) != 'operator') {
+    echo "<script>alert('Anda tidak memiliki akses')</script>";
+    echo "<script>window.location.href='index.php'</script>";
+}
+?>
 ?>
 
 <!-- Begin Page Content -->
@@ -33,7 +39,7 @@ include_once('templates/header.php');
             <button type="button" class="btn btn-primary btn-icon-split"
                 data-toggle="modal" data-target="#tambahModal">
                 <span class="icon text-white-50">
-                    <i class="fas fa plus"></i>
+                    <i class="fas fa-plus"></i>
                 </span>
                 <span class="text">Data Tamu</span>
             </button>
@@ -68,7 +74,9 @@ include_once('templates/header.php');
                                 <td><?= $tamu['kepentingan'] ?></td>
                                 <td>
                                     <a class="btn btn-success" href="edit-tamu.php?id=<?= $tamu['id_tamu']?>">Ubah</a>
-                                    <button class="btn btn-danger" type="button">Hapus</button>
+                                    <a onclick="confirm('Apakah anda yakin ingin menghapus data ini?')" class="btn btn-danger"
+                                        href="hapus_tamu.php?id=<?= $tamu['id_tamu']?>">Hapus
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
