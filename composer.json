@@ -1,0 +1,16 @@
+{
+    "name": "lenovo/buku-tamu",
+    "autoload": {
+        "psr-4": {
+            "Lenovo\\BukuTamu\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "skip"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.10"
+    }
+}

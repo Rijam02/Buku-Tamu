@@ -23,7 +23,12 @@ function tambah_tamu($data) {
     $bertemu     = htmlspecialchars($data["bertemu"]);
     $kepentingan = htmlspecialchars($data["kepentingan"]);
 
-    $query = "INSERT INTO buku_tamu VALUES ('$kode', '$tanggal', '$nama_tamu', '$alamat', '$no_hp', '$bertemu', '$kepentingan')";
+    $gambar = uploadGambar();
+    if (!$gambar) {
+        return false;
+    }
+
+    $query = "INSERT INTO buku_tamu VALUES ('$kode', '$tanggal', '$nama_tamu', '$alamat', '$no_hp', '$bertemu', '$kepentingan', '$gambar')";
     mysqli_query($koneksi, $query);
 
     return mysqli_affected_rows($koneksi);
@@ -35,19 +40,27 @@ function ubah_tamu($data) {
     
     global $koneksi;
 
-    $id        = htmlspecialchars($data["id_tamu"]);
+    $id          = htmlspecialchars($data["id_tamu"]);
     $nama_tamu   = htmlspecialchars($data["nama_tamu"]);
     $alamat      = htmlspecialchars($data["alamat"]);
     $no_hp       = htmlspecialchars($data["no_hp"]);
     $bertemu     = htmlspecialchars($data["bertemu"]);
     $kepentingan = htmlspecialchars($data["kepentingan"]);
+    $gambarLama      = htmlspecialchars($data["gambarLama"]);
+
+    if ($_FILES['gambar']['error'] == 4) {
+        $gambar = $gambarLama;
+    } else {
+        $gambar = uploadGambar();
+    }
 
     $query = "UPDATE buku_tamu SET
               nama_tamu     = '$nama_tamu',
               alamat        = '$alamat',
               no_hp         = '$no_hp',
               bertemu       = '$bertemu',
-              kepentingan   = '$kepentingan'
+              kepentingan   = '$kepentingan',
+              gambar        = '$gambar'
               WHERE id_tamu = '$id'";
     
     mysqli_query($koneksi, $query);
@@ -120,4 +133,38 @@ function ganti_password($data) {
     mysqli_query($koneksi, $query);
 
     return mysqli_affected_rows($koneksi);
+}
+
+function uploadGambar() {
+    $namaFile = $_FILES['gambar']['name'];
+    $ukuranFile = $_FILES['gambar']['size'];
+    $error = $_FILES['gambar']['error'];
+    $tmpName = $_FILES['gambar']['tmp_name'];
+
+    if ($error == 4) {
+        echo "<script>alert('pilih gambar terlebih dahulu!');</script>";
+        return false;
+    }
+
+    $ekstensiGambarValid = ['jpg', 'jpeg', 'png'];
+    $ekstensiGambar = explode('.', $namaFile);
+    $ekstensiGambar = strtolower(end($ekstensiGambar));
+    if (!in_array($ekstensiGambar, $ekstensiGambarValid)) {
+        echo "<script>alert('file yang diunggah harus gambar!');</script>";
+        return false;
+    }
+
+    if ($ukuranFile > 1000000) {
+        echo "<script>alert('ukuran gambar terlalu besar!');</script>";
+        return false;
+    }
+
+    $namaFileBaru = uniqid();
+    $namaFileBaru .= '.';
+    $namaFileBaru .= $ekstensiGambar;
+
+    move_uploaded_file($tmpName, 'assets/upload_gambar/' .$namaFileBaru);
+    
+    return $namaFileBaru;
+
 }
